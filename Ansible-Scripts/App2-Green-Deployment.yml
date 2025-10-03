@@ -1,0 +1,73 @@
+---
+- name: Deploy App2 on VMSS instances
+  hosts: green_vmss
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Enable and start Apache2
+      systemd:
+        name: apache2
+        enabled: yes
+        state: started
+
+    - name: Set permissions on /var/www/html
+      file:
+        path: /var/www/html
+        mode: '0777'
+        recurse: yes
+
+    - name: Create index.html
+      copy:
+        dest: /var/www/html/index.html
+        content: "Welcome to Nishant Gawande - WebVM App2 - VM Hostname: {{ ansible_hostname }}"
+
+    - name: Create /app2 directory
+      file:
+        path: /var/www/html/app2
+        state: directory
+        mode: '0755'
+
+    - name: Create hostname.html
+      copy:
+        dest: /var/www/html/app2/hostname.html
+        content: "Welcome to Nishant Gawande - WebVM App2 - VM Hostname: {{ ansible_hostname }}"
+
+    - name: Create status.html
+      copy:
+        dest: /var/www/html/app2/status.html
+        content: "App2"
+
+    - name: Create index.html for App2
+      copy:
+        dest: /var/www/html/app2/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <body style="background-color:rgb(144, 238, 144);">
+            <h1>Welcome to Nishant Gawande's WebVM - APP2</h1>
+            <p>Terraform + Ansible Deployment Demo</p>
+            <p>Application Version: V2</p>
+          </body>
+          </html>
+
+    - name: Fetch instance metadata
+      uri:
+        url: http://169.254.169.254/metadata/instance?api-version=2020-09-01
+        headers:
+          Metadata: "true"
+        return_content: yes
+      register: metadata_response
+
+    - name: Save metadata to metadata.html
+      copy:
+        dest: /var/www/html/app2/metadata.html
+        content: "{{ metadata_response.content }}"

@@ -1,0 +1,62 @@
+---
+- name: Switch Application Gateway traffic from Blue to Green
+  hosts: localhost
+  connection: local
+  vars:
+    resource_group: "APPF-Prod-rg-swnras"
+    appgw_name: "APPF-Prod-web-ag"
+    main_rule_name: "APPF-Prod-vnet-rqrt-1"
+    green_pool_name: "APPF-Prod-vnet-beap-app2"
+    green_http_setting_name: "APPF-Prod-vnet-be-htst-app2"
+
+  tasks:
+    - name: Get Green backend pool ID
+      command: >
+        az network application-gateway address-pool show
+        --resource-group {{ resource_group }}
+        --gateway-name {{ appgw_name }}
+        --name {{ green_pool_name }}
+        --query id -o tsv
+      register: green_pool_id
+      changed_when: false
+
+    - name: Get Green HTTP setting ID
+      command: >
+        az network application-gateway http-settings show
+        --resource-group {{ resource_group }}
+        --gateway-name {{ appgw_name }}
+        --name {{ green_http_setting_name }}
+        --query id -o tsv
+      register: green_http_id
+      changed_when: false
+
+    - name: Check GreenPool Health
+      command: >
+        az network application-gateway show-backend-health
+        --resource-group {{ resource_group }}
+        --name {{ appgw_name }}
+        --query "backendAddressPools[?backendAddressPool.id=='{{ green_pool_id.stdout }}'].backendHttpSettingsCollection[].servers[?health=='Healthy']"
+      register: green_health
+      changed_when: false
+
+    - name: Show GreenPool health output
+      debug:
+        var: green_health.stdout
+
+    - name: Fail if GreenPool is not Healthy
+      fail:
+        msg: "GreenPool is not healthy. Health details: {{ green_health.stdout }}"
+      when: green_health.stdout == "[]"
+
+    - name: Update main rule to GreenPool + Green HTTP setting
+      command: >
+        az network application-gateway rule update
+        --resource-group {{ resource_group }}
+        --gateway-name {{ appgw_name }}
+        --name {{ main_rule_name }}
+        --set backend_address_pool.id={{ green_pool_id.stdout }} backend_http_settings.id={{ green_http_id.stdout }}
+      register: switch_result
+
+    - name: Show switch result
+      debug:
+        var: switch_result.stdout

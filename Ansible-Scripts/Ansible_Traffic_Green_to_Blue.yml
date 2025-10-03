@@ -1,0 +1,62 @@
+---
+- name: Rollback Application Gateway traffic from Green to Blue
+  hosts: localhost
+  connection: local
+  vars:
+    resource_group: "APPF-Prod-rg-swnras"
+    appgw_name: "APPF-Prod-web-ag"
+    main_rule_name: "APPF-Prod-vnet-rqrt-1"
+    blue_pool_name: "APPF-Prod-vnet-beap-app1"
+    blue_http_setting_name: "APPF-Prod-vnet-be-htst-app1"
+
+  tasks:
+    - name: Get Blue backend pool ID
+      command: >
+        az network application-gateway address-pool show
+        --resource-group {{ resource_group }}
+        --gateway-name {{ appgw_name }}
+        --name {{ blue_pool_name }}
+        --query id -o tsv
+      register: blue_pool_id
+      changed_when: false
+
+    - name: Get Blue HTTP setting ID
+      command: >
+        az network application-gateway http-settings show
+        --resource-group {{ resource_group }}
+        --gateway-name {{ appgw_name }}
+        --name {{ blue_http_setting_name }}
+        --query id -o tsv
+      register: blue_http_id
+      changed_when: false
+
+    - name: Check BluePool Health
+      command: >
+        az network application-gateway show-backend-health
+        --resource-group {{ resource_group }}
+        --name {{ appgw_name }}
+        --query "backendAddressPools[?backendAddressPool.id=='{{ blue_pool_id.stdout }}'].backendHttpSettingsCollection[].servers[?health=='Healthy']"
+      register: blue_health
+      changed_when: false
+
+    - name: Show BluePool health output
+      debug:
+        var: blue_health.stdout
+
+    - name: Fail if BluePool is not Healthy
+      fail:
+        msg: "BluePool is not healthy. Health details: {{ blue_health.stdout }}"
+      when: blue_health.stdout == "[]"
+
+    - name: Update main rule to BluePool + Blue HTTP setting
+      command: >
+        az network application-gateway rule update
+        --resource-group {{ resource_group }}
+        --gateway-name {{ appgw_name }}
+        --name {{ main_rule_name }}
+        --set backend_address_pool.id={{ blue_pool_id.stdout }} backend_http_settings.id={{ blue_http_id.stdout }}
+      register: rollback_result
+
+    - name: Show rollback result
+      debug:
+        var: rollback_result.stdout
