@@ -66,3 +66,54 @@ Rollback playbook restores traffic to blue VMSS in case of failure.
 - 🔄 Automated traffic switch & rollback using Ansible
 - 📈 Scalable architecture with VMSS and Application Gateway
 - 🧠 Metadata-driven validation for observability and traceability
+
+Screenshot:
+<img width="1908" height="999" alt="Screenshot 2025-10-02 233842" src="https://github.com/user-attachments/assets/59df98ee-25b2-436d-975d-fdc438b37c48" />
+
+---
+<img width="1919" height="1001" alt="Screenshot 2025-10-02 232501" src="https://github.com/user-attachments/assets/0b054f4e-95d7-4df6-b7bf-0bd1f474877c" />
+
+------
+<img width="746" height="343" alt="image" src="https://github.com/user-attachments/assets/c4846a2d-5f92-4792-972d-19d90ac3e3b3" />
+
+----
+<img width="776" height="329" alt="image" src="https://github.com/user-attachments/assets/a27ea5d0-613b-4e53-9c4f-f85e9695228b" />
+
+-----
+<img width="1892" height="911" alt="Screenshot 2025-10-02 235800" src="https://github.com/user-attachments/assets/2feaffec-0a1b-45c0-a528-7fa95efd1c60" />
+
+--------
+<img width="1842" height="887" alt="Screenshot 2025-10-02 235354" src="https://github.com/user-attachments/assets/93607b67-75ea-4c19-8e35-cafbcad0de54" />
+
+-------
+<img width="1479" height="549" alt="Screenshot 2025-10-02 234415" src="https://github.com/user-attachments/assets/47e87ebe-3a34-47cb-9dae-c10bc0f41f36" />
+
+-------
+<img width="1047" height="397" alt="Screenshot 2025-10-02 235135" src="https://github.com/user-attachments/assets/7928ea3c-27ad-411e-878c-999c79bb043f" />
+
+------------------ Green vmss app2 deploymemt 
+<img width="1020" height="686" alt="Screenshot 2025-10-02 220018" src="https://github.com/user-attachments/assets/e754f239-8d9a-4371-a39e-378084c8c739" />
+
+------------------ Blue vmss app1 deployment
+<img width="1035" height="711" alt="Screenshot 2025-10-02 215947" src="https://github.com/user-attachments/assets/e7e4d975-cfed-40ad-b59a-cbbab7d7b665" />
+
+--------------- Blue to Green----------
+<img width="1666" height="706" alt="Screenshot 2025-10-02 232051" src="https://github.com/user-attachments/assets/8eb27734-d5e2-4f42-8cf4-eb59acb696f5" />
+<img width="1651" height="634" alt="Screenshot 2025-10-02 232125" src="https://github.com/user-attachments/assets/89a2cb23-799e-4a7f-ac32-8b13b284f7a1" />
+
+--------------- Green to Blue----------
+<img width="1732" height="707" alt="Screenshot 2025-10-02 233750" src="https://github.com/user-attachments/assets/6c0a2930-5cd0-4ec6-a4a7-2fc752e20081" />
+<img width="1849" height="613" alt="Screenshot 2025-10-02 233807" src="https://github.com/user-attachments/assets/ae7df62f-7506-4891-835f-c8e32eac0c50" />
+
+
+
+
+
+
+
+
+
+
+
+
+
